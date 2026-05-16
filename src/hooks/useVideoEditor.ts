@@ -6,6 +6,7 @@ import { loadFFmpeg, exportVideo, terminateFFmpeg } from "@/lib/ffmpeg";
 
 const DEFAULT_TITLE = "Reframe — Resize, trim, and export videos in your browser";
 
+
 function getVideoDuration(file: File): Promise<number> {
   return new Promise((resolve, reject) => {
     const video = document.createElement("video");
@@ -58,6 +59,7 @@ export function useVideoEditor() {
   const [error, setError] = useState<string | null>(null);
   const exportAbortControllerRef = useRef<AbortController | null>(null);
   const exportCancelledRef = useRef(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   const updateRecipe = useCallback((patch: Partial<EditRecipe>) => {
     setRecipe((prev) => ({ ...prev, ...patch }));
@@ -212,6 +214,12 @@ export function useVideoEditor() {
     return () => clearInterval(interval);
   }, [status]);
 
+  const seekTo = useCallback((time: number) => {
+  if (videoRef.current) {
+    videoRef.current.currentTime = time;
+  }
+}, []);
+
   return {
     file,
     duration,
@@ -220,6 +228,8 @@ export function useVideoEditor() {
     progress,
     result,
     error,
+    videoRef,   
+  seekTo, 
     updateRecipe,
     handleFileSelect,
     handleExport,

@@ -3,6 +3,7 @@
 import { useVideoEditor } from "@/hooks/useVideoEditor";
 import FileUpload from "./FileUpload";
 import VideoPreview from "./VideoPreview";
+import ThumbnailStrip from "./ThumbnailStrip";  
 import PresetSelector from "./PresetSelector";
 import FramingControl from "./FramingControl";
 import TrimControl from "./TrimControl";
@@ -44,13 +45,17 @@ function Section({ icon, title, children, delay = 0 }: SectionProps) {
 
 export default function VideoEditor() {
   const {
-    file, duration, recipe, status, progress,
-    result, error, updateRecipe,
-    handleFileSelect, handleExport, cancelExport, reset,
-  } = useVideoEditor();
-
+  file, duration, recipe, status, progress,
+  result, error, updateRecipe,
+  handleFileSelect, handleExport, cancelExport, reset, resetSettings,
+  videoRef,
+  seekTo,
+} = useVideoEditor();
   const isProcessing = status === "loading-engine" || status === "exporting";
 
+  // build a stable object url string for ThumbnailStrip
+  const videoSrc = file ? URL.createObjectURL(file) : null;   // ← ADD this
+ 
   return (
     <div className="min-h-screen relative flex flex-col" style={{ background: "var(--bg)" }}>
       <ExportOverlay status={status} progress={progress} onCancel={cancelExport} />
@@ -87,7 +92,18 @@ export default function VideoEditor() {
 
               {file && (
                 <div className="mt-4 animate-fade-in">
-                  <VideoPreview file={file} />
+                  <VideoPreview file={file} videoRef={videoRef} />
+
+                  <div className="mt-3">
+                    <ThumbnailStrip
+                      videoSrc={videoSrc}
+                      duration={duration}
+                      currentTime={videoRef.current?.currentTime ?? 0}
+                      trimStart={recipe.trimStart ?? 0}
+                      trimEnd={recipe.trimEnd ?? duration}
+                      onSeek={seekTo}
+                    />
+                  </div>  
                 </div>
               )}
             </div>

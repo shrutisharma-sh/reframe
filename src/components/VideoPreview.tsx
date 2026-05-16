@@ -1,13 +1,14 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, RefObject } from "react";
 
 interface Props {
   file: File | null;
+  videoRef: RefObject<HTMLVideoElement | null>;
 }
 
-export default function VideoPreview({ file }: Props) {
-  const videoRef = useRef<HTMLVideoElement>(null);
+export default function VideoPreview({ file ,videoRef }: Props) {
+  
   const urlRef = useRef<string | null>(null);
 
   useEffect(() => {
@@ -17,12 +18,12 @@ export default function VideoPreview({ file }: Props) {
     if (urlRef.current) URL.revokeObjectURL(urlRef.current);
     const url = URL.createObjectURL(file);
     urlRef.current = url;
-    if (videoRef.current) videoRef.current.src = url;
+    if (videoRef.current) videoRef.current.src = url;  
 
     return () => {
       if (urlRef.current) URL.revokeObjectURL(urlRef.current);
     };
-  }, [file]);
+  }, [file, videoRef]);
 
   if (!file) return null;
 
