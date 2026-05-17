@@ -1,9 +1,10 @@
 "use client";
 
+import { useMemo, useEffect } from "react";
 import { useVideoEditor } from "@/hooks/useVideoEditor";
 import FileUpload from "./FileUpload";
 import VideoPreview from "./VideoPreview";
-import ThumbnailStrip from "./ThumbnailStrip";  
+import ThumbnailStrip from "./ThumbnailStrip";
 import PresetSelector from "./PresetSelector";
 import FramingControl from "./FramingControl";
 import TrimControl from "./TrimControl";
@@ -45,17 +46,26 @@ function Section({ icon, title, children, delay = 0 }: SectionProps) {
 
 export default function VideoEditor() {
   const {
-  file, duration, recipe, status, progress,
-  result, error, updateRecipe,
-  handleFileSelect, handleExport, cancelExport, reset, resetSettings,
-  videoRef,
-  seekTo,
-} = useVideoEditor();
+    file, duration, recipe, status, progress,
+    result, error, updateRecipe,
+    handleFileSelect, handleExport, cancelExport, reset,
+    videoRef,
+    seekTo,
+  } = useVideoEditor();
+
   const isProcessing = status === "loading-engine" || status === "exporting";
 
-  // build a stable object url string for ThumbnailStrip
-  const videoSrc = file ? URL.createObjectURL(file) : null;   // ← ADD this
- 
+  const videoSrc = useMemo(
+    () => (file ? URL.createObjectURL(file) : null),
+    [file]
+  );
+
+  useEffect(() => {
+    return () => {
+      if (videoSrc) URL.revokeObjectURL(videoSrc);
+    };
+  }, [videoSrc]);
+
   return (
     <div className="min-h-screen relative flex flex-col" style={{ background: "var(--bg)" }}>
       <ExportOverlay status={status} progress={progress} onCancel={cancelExport} />
@@ -84,10 +94,10 @@ export default function VideoEditor() {
               <FileUpload onFileSelect={handleFileSelect} currentFile={file} />
 
               {!file && (
-              <div className="text-center text-gray-500 py-6">
-                <p>Upload a video to get started</p>
-                <p className="text-sm">Supports MP4, MOV, WebM and more</p>
-              </div>
+                <div className="text-center text-gray-500 py-6">
+                  <p>Upload a video to get started</p>
+                  <p className="text-sm">Supports MP4, MOV, WebM and more</p>
+                </div>
               )}
 
               {file && (
@@ -103,7 +113,7 @@ export default function VideoEditor() {
                       trimEnd={recipe.trimEnd ?? duration}
                       onSeek={seekTo}
                     />
-                  </div>  
+                  </div>
                 </div>
               )}
             </div>
@@ -133,10 +143,10 @@ export default function VideoEditor() {
             )}
 
             {status === "error" && error && (
-                 <div
-                    role="status"
-                    className="flex items-start gap-3 p-4 bg-film-50 border border-film-200 rounded-xl text-film-800 text-sm animate-fade-in"
-                  >
+              <div
+                role="status"
+                className="flex items-start gap-3 p-4 bg-film-50 border border-film-200 rounded-xl text-film-800 text-sm animate-fade-in"
+              >
                 <AlertTriangle size={16} className="shrink-0 mt-0.5 text-film-500" />
                 <div>
                   <p className="font-heading font-bold text-sm">Error</p>
@@ -190,9 +200,9 @@ export default function VideoEditor() {
           <p className="text-[11px] font-heading text-[var(--muted)] tracking-wide">
             2026 Reframe. Free, open source, no login required.
           </p>
-<p className="text-[10px] text-[var(--muted)]">
-  All video processing happens locally in your browser using FFmpeg.wasm.
-</p>
+          <p className="text-[10px] text-[var(--muted)]">
+            All video processing happens locally in your browser using FFmpeg.wasm.
+          </p>
           <a
             href="https://github.com/magic-peach/reframe"
             target="_blank"

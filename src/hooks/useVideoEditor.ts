@@ -6,7 +6,6 @@ import { loadFFmpeg, exportVideo, terminateFFmpeg } from "@/lib/ffmpeg";
 
 const DEFAULT_TITLE = "Reframe — Resize, trim, and export videos in your browser";
 
-
 function getVideoDuration(file: File): Promise<number> {
   return new Promise((resolve, reject) => {
     const video = document.createElement("video");
@@ -36,11 +35,8 @@ function verifyMagicBytes(file: File): Promise<boolean> {
       const hex = Array.from(arr).map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase();
       const ascii = String.fromCharCode(...arr);
 
-      // WebM / MKV
       if (hex.startsWith('1A45DFA3')) resolve(true);
-      // AVI
       else if (hex.startsWith('52494646')) resolve(true);
-      // MP4 / MOV (checks for 'ftyp' in first 12 bytes)
       else if (ascii.substring(0, 12).includes('ftyp')) resolve(true);
       else resolve(false);
     };
@@ -71,7 +67,6 @@ export function useVideoEditor() {
     setError(null);
     setFile(null);
 
-    // LAYER 1: Extension check
     const validExtensions = ['.mp4', '.mov', '.avi', '.webm', '.mkv'];
     const name = selectedFile.name.toLowerCase();
     const hasValidExtension = validExtensions.some(ext => name.endsWith(ext));
@@ -81,14 +76,12 @@ export function useVideoEditor() {
       return;
     }
 
-    // LAYER 2: MIME type check
     if (!selectedFile.type.startsWith("video/")) {
       setError(`Layer 2 Validation Failed: Invalid MIME type. Expected video/*, got ${selectedFile.type || 'unknown'}`);
       setStatus("error");
       return;
     }
 
-    // LAYER 3: Magic Bytes Verification
     const isVideo = await verifyMagicBytes(selectedFile);
     if (!isVideo) {
       setError("Layer 3 Validation Failed: Invalid file content. The file's magic bytes do not match known video formats.");
@@ -173,7 +166,6 @@ export function useVideoEditor() {
     };
 
     document.addEventListener("keydown", handleKeydown);
-
     return () => {
       document.removeEventListener("keydown", handleKeydown);
     };
@@ -199,7 +191,6 @@ export function useVideoEditor() {
     setError(null);
   }, []);
 
-  // Development-only memory monitoring during export
   useEffect(() => {
     if (process.env.NODE_ENV !== "development") return;
     if (status !== "exporting") return;
@@ -215,10 +206,10 @@ export function useVideoEditor() {
   }, [status]);
 
   const seekTo = useCallback((time: number) => {
-  if (videoRef.current) {
-    videoRef.current.currentTime = time;
-  }
-}, []);
+    if (videoRef.current) {
+      videoRef.current.currentTime = time;
+    }
+  }, []);
 
   return {
     file,
@@ -228,8 +219,8 @@ export function useVideoEditor() {
     progress,
     result,
     error,
-    videoRef,   
-  seekTo, 
+    videoRef,
+    seekTo,
     updateRecipe,
     handleFileSelect,
     handleExport,

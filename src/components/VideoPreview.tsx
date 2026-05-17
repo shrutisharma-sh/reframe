@@ -7,18 +7,16 @@ interface Props {
   videoRef: RefObject<HTMLVideoElement | null>;
 }
 
-export default function VideoPreview({ file ,videoRef }: Props) {
-  
+export default function VideoPreview({ file, videoRef }: Props) {
   const urlRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (!file) return;
 
-    // revoke previous object url to avoid memory leaks
     if (urlRef.current) URL.revokeObjectURL(urlRef.current);
     const url = URL.createObjectURL(file);
     urlRef.current = url;
-    if (videoRef.current) videoRef.current.src = url;  
+    if (videoRef.current) videoRef.current.src = url;
 
     return () => {
       if (urlRef.current) URL.revokeObjectURL(urlRef.current);
