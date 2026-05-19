@@ -7,6 +7,7 @@ export interface EditRecipe {
   trimEnd: number | null;
   rotate: 0 | 90 | 180 | 270;
   keepAudio: boolean;
+  normalizeAudio: boolean;
   speed: number;
   quality: number;
 }
@@ -37,6 +38,7 @@ export const DEFAULT_RECIPE: EditRecipe = {
   trimEnd: null,
   rotate: 0,
   keepAudio: true,
+  normalizeAudio: false,
   speed: 1,
   quality: 23,
 };

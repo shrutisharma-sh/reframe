@@ -1,13 +1,15 @@
 "use client";
 
 import { useEffect, useRef, RefObject } from "react";
+import { EditRecipe } from "@/lib/types";
 
 interface Props {
   file: File | null;
   videoRef: RefObject<HTMLVideoElement | null>;
+  recipe: EditRecipe;
 }
 
-export default function VideoPreview({ file, videoRef }: Props) {
+export default function VideoPreview({ file, videoRef ,recipe }: Props) {
   const urlRef = useRef<string | null>(null);
 
   useEffect(() => {
@@ -23,16 +25,29 @@ export default function VideoPreview({ file, videoRef }: Props) {
     };
   }, [file, videoRef]);
 
+  // sync mute state to video element
+  useEffect(() => {
+    if (!videoRef.current) return;
+    videoRef.current.muted = !recipe.keepAudio;
+  }, [recipe.keepAudio, videoRef]);
+
+
+  useEffect(() => {
+    if (!videoRef.current) return;
+    videoRef.current.playbackRate = recipe.speed;
+  }, [recipe.speed, videoRef]);
+
   if (!file) return null;
 
   return (
     <div className="w-full rounded-lg overflow-hidden bg-[#0a0a0a] aspect-video">
-      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+     
       <video
         ref={videoRef}
         controls
         className="w-full h-full object-contain"
         playsInline
+        muted={!recipe.keepAudio}
       />
     </div>
   );

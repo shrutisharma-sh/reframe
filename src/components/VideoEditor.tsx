@@ -102,7 +102,7 @@ export default function VideoEditor() {
 
               {file && (
                 <div className="mt-4 animate-fade-in">
-                  <VideoPreview file={file} videoRef={videoRef} />
+                  <VideoPreview file={file} videoRef={videoRef} recipe={recipe}/>
 
                   <div className="mt-3">
                     <ThumbnailStrip
