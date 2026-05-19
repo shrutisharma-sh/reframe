@@ -90,7 +90,6 @@ export default function AudioSpeedControl({ recipe, onChange }: Props) {
         </span>
       </button>
 
-
       <div>
         <div className="flex items-center justify-between mb-2">
           <label
@@ -110,27 +109,6 @@ export default function AudioSpeedControl({ recipe, onChange }: Props) {
             </span>
           </div>
         </div>
-        <button
-          type="button"
-          onClick={() => onChange({ normalizeAudio: !recipe.normalizeAudio })}
-          className={cn(
-            "w-full flex items-center gap-3 p-3 rounded-lg border transition-all duration-150",
-            "hover:scale-[1.01] active:scale-[0.99]",
-            recipe.normalizeAudio
-              ? "border-film-300 bg-film-50 text-film-700"
-              : "border-[var(--border)] bg-[var(--surface)] text-[var(--muted)]"
-          )}
-        >
-          <Gauge size={16} />
-          <div className="flex-1 text-left">
-            <span className="text-sm font-heading font-semibold block">
-              Normalize Audio
-            </span>
-            <span className="text-[10px] text-[var(--muted)]">
-              {recipe.normalizeAudio ? "–14 LUFS (streaming standard)" : "Off"}
-            </span>
-          </div>
-        </button>
         <input
           id="speed-control"
           type="range"
@@ -179,6 +157,8 @@ export default function AudioSpeedControl({ recipe, onChange }: Props) {
             </span>
           </div>
         </button>
+      )}
+
       {recipe.keepAudio && (recipe.trimStart !== 0 || recipe.trimEnd !== null) && (
         <div className="mt-3 p-3 bg-amber-50 border border-amber-200 rounded text-sm text-amber-700 leading-relaxed flex items-start gap-2 animate-fade-in">
           <AlertTriangle size={12} className="shrink-0 mt-0.5" />
