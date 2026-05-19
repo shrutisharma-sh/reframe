@@ -29,24 +29,24 @@ export default function VideoPreview({ file, videoRef ,recipe }: Props) {
   useEffect(() => {
     if (!videoRef.current || !recipe) return;
     videoRef.current.muted = !recipe.keepAudio;
-  }, [recipe?.keepAudio, videoRef]);
+  }, [recipe, videoRef]);
 
   useEffect(() => {
     if (!videoRef.current || !recipe) return;
     videoRef.current.playbackRate = recipe.speed;
-  }, [recipe?.speed, videoRef]);
-  if (!file) return null;
-
+  }, [recipe, videoRef]);
   return (
     <div className="w-full rounded-lg overflow-hidden bg-[#0a0a0a] aspect-video">
      
       <video
-        ref={videoRef}
-        controls
-        className="w-full h-full object-contain"
-        playsInline
-        muted={!recipe.keepAudio}
-      />
+  ref={videoRef}
+  controls
+  className="w-full h-full object-contain"
+  playsInline
+  muted={!recipe?.keepAudio}
+>
+  <track kind="captions" />
+</video>
     </div>
   );
 }
